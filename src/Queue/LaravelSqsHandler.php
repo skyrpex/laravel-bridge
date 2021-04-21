@@ -98,6 +98,11 @@ class LaravelSqsHandler extends SqsHandler
             // Report exception to defined log channel
             $this->exceptions->report($e);
 
+            // Execute the clean up method, if exists
+            if (method_exists($job, 'failed')) {
+                call_user_func([$job, 'failed'], $e);
+            }
+
             // Rethrow the exception to let SQS handle it
             throw $e;
         }
